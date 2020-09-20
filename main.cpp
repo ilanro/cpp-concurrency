@@ -7,52 +7,44 @@
 //
 
 #include <iostream>
-#include <vector>
 #include "readerswriters.hpp"
+#include <semaphore.h>
+#include "tests.hpp"
 
-int shared = 0;
+using namespace std;
 
-mutex g;
 
-void write_to_shared(ReadersWriters *rw)
-{
-    rw->StartWrite();
-    cout<<"Thread" << this_thread::get_id()<<" is writing to shared. Value after write: "<< (++shared) <<endl;
-    rw->EndWrite();
+sem_t a1_done, b1_done;
+
+void a(){
+    cout<<"a1"<<endl;
+    sem_post(&a1_done);
+    sem_wait(&b1_done);
+    cout<<"a2"<<endl;
 }
 
-void read_from_shared(ReadersWriters *rw)
-{
-    rw->StartRead();
-    g.lock();
-    cout<<"Thread" << this_thread::get_id()<<" is reading from shared. Value after write: "<< shared <<endl;
-    g.unlock();
-    rw->EndRead();
+void b(){
+    cout<<"b1"<<endl;
+    sem_post(&b1_done);
+    sem_wait(&a1_done);
+    cout<<"b2"<<endl;
 }
 
-void test(int a)
-{
-    return;
-}
 
 
 
 
 int main(int argc, const char * argv[]) {
     
-    vector<thread> threads;
-    ReadersWriters rw;
+    //test_readers_writers();
+    sem_init(&a1_done, 0, 0);
+    sem_init(&b1_done, 0, 0);
     
+    thread t1(a);
+    thread t2(b);
     
-    for (int i=0; i<10; i++) {
-        threads.push_back(thread(write_to_shared, &rw));
-        threads.push_back(thread(read_from_shared, &rw));
-    }
-    
-    for(auto &th : threads)
-    {
-        th.join();
-    }
+    t1.join();
+    t2.join();
     
     return 0;
 }

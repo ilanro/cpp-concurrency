@@ -8,6 +8,7 @@
 
 #include "readerswriters.hpp"
 
+using namespace std;
 ReadersWriters::ReadersWriters(): readers_count(0), waiting_writers(0),is_writing(false) {}
 
 void ReadersWriters::StartRead()

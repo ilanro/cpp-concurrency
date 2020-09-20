@@ -13,7 +13,6 @@
 #include <mutex>
 #include <thread>
 
-using namespace std;
 
 
 class ReadersWriters
@@ -21,8 +20,8 @@ class ReadersWriters
     int readers_count, waiting_writers;
     bool is_writing;
 
-    mutex mtx;
-    condition_variable cv;
+    std::mutex mtx;
+    std::condition_variable cv;
     
 public:
     ReadersWriters();
